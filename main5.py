@@ -1,39 +1,51 @@
-import random
-from colorama import Fore, init
+from tkinter import *
+from random import randint
 
-init(autoreset=True)
+tk = Tk()
+canvas = Canvas(tk, width=800, height=500, bg='blue')
+canvas.pack()
 
+maxB = 10
+genT = 1000
 
-countries = ["Україна", "Франція", "Японія", "Німеччина", "Італія", "Канада", "Іспанія", "Норвегія"]
-capitals = ["Київ", "Париж", "Токіо", "Берлін", "Рим", "Оттава", "Мадрид", "Осло"]
+class Bub:
+    number = 0
+    clicked = 0
 
+    def __init__(self):
+        self.d = 40
+        self.x = randint(2, 755)
+        self.y = randint(2, 455)
+        self.dx = randint(-5, 5)
+        self.dy = randint(-5, 5)
+        Bub.number += 1
 
-quiz = list(zip(countries, capitals))
-random.shuffle(quiz)
+        self.id = canvas.create_oval(self.x, self.y, self.x + self.d, self.y + self.d, fill='blue')
+        canvas.tag_bind(self.id, '<Button-1>', self.on_click)
+        self.move()
 
-mistakes = 0
-score = 0
+    def move(self):
+        canvas.move(self.id, self.dx, self.dy)
+        pos = canvas.coords(self.id)
+        if len(pos) > 0:
+            if pos[0] < 2 or pos[2] > 798:
+                self.dx = -self.dx
+            if pos[1] < 2 or pos[3] > 498:
+                self.dy = -self.dy
+            tk.after(100, self.move)
 
-print(Fore.CYAN + "╔════════════════════════════════════════╗")
-print(Fore.CYAN + "║       🎮 Гра «Відгадай столицю» 🎮      ║")
-print(Fore.CYAN + "╚════════════════════════════════════════╝\n")
+    def on_click(self, event):
+        canvas.delete(self.id)
+        Bub.number -= 1
+        Bub.clicked += 1
+        tk.title(f'Клацнуто: {Bub.clicked}')
 
-for country, capital in quiz:
-    answer = input(Fore.YELLOW + f"👉 Яка столиця країни {country}? ").strip()
-
-    if answer.lower() == capital.lower():
-        print(Fore.GREEN + f"✅ Правильно! {capital} — столиця {country}.\n")
-        score += 1
+def play():
+    if Bub.number < maxB:
+        Bub()
+        tk.after(genT, play)
     else:
-        mistakes += 1
-        print(Fore.RED + f"❌ Неправильно! Правильна відповідь: {capital}\n")
-        if mistakes == 3:
-            break
+        tk.title('Гру закінчено. Ваш результат: ' + str(Bub.clicked))
 
-print(Fore.MAGENTA + "══════════════════════════════════════════")
-print(Fore.CYAN + f"📊 Результат: {score} правильних відповідей, {mistakes} помилок.")
-if mistakes < 3:
-    print(Fore.GREEN + "🎉 Вітаю! Ви завершили гру без 3-х помилок.")
-else:
-    print(Fore.RED + "💀 Гру завершено! Ви зробили 3 помилки.")
-print(Fore.MAGENTA + "══════════════════════════════════════════")
+play()
+tk.mainloop()
