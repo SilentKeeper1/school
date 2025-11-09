@@ -3,11 +3,11 @@ class Car:
         self.mileage = mileage
         self.fuel = fuel
 
-    def vitr(self): 
+    def vitr(self):
         self.fuel -= 3
         print('залишилось пального', self.fuel)
 
-    def zapr(self): 
+    def zapr(self):
         self.fuel += 10
         print('залишилось пального', self.fuel)
 
